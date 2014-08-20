@@ -1,0 +1,13 @@
+{
+    "name": "ivko/yii-storage",
+    "description": "yii storage service",
+    "authors": [
+        {
+            "name": "IvKo"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "asgaroth/xupload": "dev-master"
+    }
+}
