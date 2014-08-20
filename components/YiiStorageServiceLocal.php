@@ -37,21 +37,21 @@ class YiiStorageServiceLocal extends YiiStorageServiceAbstract
         return $this->publicPath;
     }
 
-    public function getPublicUrl(StorageFiles $model) {
+    public function getPublicUrl(StorageFilesAbstract $model) {
         return $this->getPublicPath() . DS . $model->storage_path;
     }
     
-    public function map(StorageFiles $model)
+    public function map(StorageFilesAbstract $model)
     {
         return $this->getPublicUrl($model);
     }
 
-    public function getLocalPath(StorageFiles $model)
+    public function getLocalPath(StorageFilesAbstract $model)
     {
         return $this->getPath() . DS . $model->storage_path;
     }
 
-    public function store(StorageFiles $model, $file)
+    public function store(StorageFilesAbstract $model, $file)
     {
         $path = $this->getScheme()->generate($model->toArray());
         // Copy file
@@ -69,13 +69,13 @@ class YiiStorageServiceLocal extends YiiStorageServiceAbstract
         return $path;
     }
 
-    public function read(StorageFiles $model)
+    public function read(StorageFilesAbstract $model)
     {
         $file = $this->getLocalPath($model);
         return @file_get_contents($file);
     }
 
-    public function write(StorageFiles $model, $data)
+    public function write(StorageFilesAbstract $model, $data)
     {
         // Write data
         $path = $this->getScheme()->generate($model->toArray());
@@ -96,7 +96,7 @@ class YiiStorageServiceLocal extends YiiStorageServiceAbstract
         return $path;
     }
 
-    public function remove(StorageFiles $model)
+    public function remove(StorageFilesAbstract $model)
     {
         $storage_path = $model->storage_path;
         if (!empty($storage_path))
@@ -105,7 +105,7 @@ class YiiStorageServiceLocal extends YiiStorageServiceAbstract
         }
     }
 
-    public function temporary(StorageFiles $model)
+    public function temporary(StorageFilesAbstract $model)
     {
         $file = $this->getPath() . DS . $model->storage_path;
         $tmp_file = $this->getPath() . DS . 'temporary'. DS . basename($file);

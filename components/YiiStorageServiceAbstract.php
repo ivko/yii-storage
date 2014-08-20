@@ -5,8 +5,8 @@ Yii::import('vendor.ivko.yii-storage.models.*');
 
 abstract class YiiStorageServiceAbstract extends CApplicationComponent implements YiiStorageServiceInterface {
 
-    public $_schemeClass = 'YiiStorageServiceSchemeDynamic';
-    public $_modelClass = 'StorageFiles';
+    public $schemeClass = 'YiiStorageServiceSchemeDynamic';
+    public $modelClass = 'StorageFilesAbstract';
     
     protected $_identity;
     protected $_scheme;
@@ -25,7 +25,7 @@ abstract class YiiStorageServiceAbstract extends CApplicationComponent implement
 
     public function getScheme() {
         if (null === $this->_scheme) {
-            $class = $this->_schemeClass;
+            $class = $this->schemeClass;
             $this->_scheme = new $class();
         }
         return $this->_scheme;
@@ -300,7 +300,7 @@ abstract class YiiStorageServiceAbstract extends CApplicationComponent implement
             }
         }
         
-        $modelClass = $this->_modelClass;
+        $modelClass = $this->modelClass;
         
         $model = new $modelClass();
         $model->setAttributes($params);
@@ -308,7 +308,11 @@ abstract class YiiStorageServiceAbstract extends CApplicationComponent implement
         
         return $model;
     }
- 
+    
+    public function getModel() {
+        return call_user_func(array($this->modelClass, 'model'));
+    }
+
     public function getFile($id, $relationship = null)
     {
         $key = $id . '_' . ( $relationship ? $relationship : 'default' );
@@ -316,14 +320,14 @@ abstract class YiiStorageServiceAbstract extends CApplicationComponent implement
         if (!array_key_exists($key, $this->_files)) {
             $file = null;
             if ($relationship) {
-                $file = StorageFiles::model()->findAllAttributes(array(
+                $file = $this->getModel()->findAllAttributes(array(
                     'parent_file_id' => $id,
                     'type' => $relationship,
                 ));
             }
 
             if ( null === $file ) {
-                $file = StorageFiles::model()->findByPk($id);;
+                $file = $this->getModel()->findByPk($id);;
             }
    
             $this->_files[$key] = $file;
@@ -355,13 +359,15 @@ abstract class YiiStorageServiceAbstract extends CApplicationComponent implement
     public function gc()
     {
         // Delete temporary files
-        $files = StorageFiles::model()->findAll(array(
+        $files = $this->getModel()->findAll(array(
             'condition'=>'parent_type=:parent_type AND creation_date <= DATE_SUB(NOW(), INTERVAL 1 DAY)',
             'params'=>array(':parent_type'=>'temporary'),
         ));
+        
         foreach($files as $file) {
             $file->remove();
         }
+        
         return $this;
     }
 }

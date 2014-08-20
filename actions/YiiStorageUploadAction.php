@@ -98,7 +98,7 @@ class YiiStorageUploadAction extends CAction {
 
                 $file = Yii::app()->storageService->createTemporaryFile($uploadedFile);
 
-                if ($file instanceof StorageFiles) {
+                if ($file instanceof StorageFilesAbstract) {
                     $data = $file->toArray();
                     $data['delete_type'] = "POST";
                     $data['delete_url'] = $this->getController()->createUrl($this->getId(), array(

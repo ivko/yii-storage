@@ -23,7 +23,7 @@ interface YiiStorageServiceInterface
     * @param YiiStorageModelDbRowFile The file for operation
     * @return string
     */
-    public function map(StorageFiles $model);
+    public function map(StorageFilesAbstract $model);
  
     /**
     * Stores a local file in the storage service
@@ -32,7 +32,7 @@ interface YiiStorageServiceInterface
     * @param array $params Contains iden
     * @return string Storage type specific path (internal use only)
     */
-    public function store(StorageFiles $model, $file);
+    public function store(StorageFilesAbstract $model, $file);
  
     /**
     * Returns the content of the file
@@ -40,7 +40,7 @@ interface YiiStorageServiceInterface
     * @param YiiStorageModelDbRowFile $model The file for operation
     * @param array $params
     */
-    public function read(StorageFiles $model);
+    public function read(StorageFilesAbstract $model);
  
     /**
     * Creates a new file from data rather than an existing file
@@ -48,14 +48,14 @@ interface YiiStorageServiceInterface
     * @param YiiStorageModelDbRowFile $model The file for operation
     * @param string $data
     */
-    public function write(StorageFiles $model, $data);
+    public function write(StorageFilesAbstract $model, $data);
  
     /**
     * Removes the file
     *
     * @param YiiStorageModelDbRowFile $model The file for operation
     */
-    public function remove(StorageFiles $model);
+    public function remove(StorageFilesAbstract $model);
  
     /**
     * Removes a file
@@ -69,7 +69,7 @@ interface YiiStorageServiceInterface
     *
     * @param YiiStorageModelDbRowFile $model The file for operation
     */
-    public function temporary(StorageFiles $model);
+    public function temporary(StorageFilesAbstract $model);
  
     /**
     * Get the naming scheme object

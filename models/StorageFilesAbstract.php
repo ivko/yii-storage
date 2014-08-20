@@ -21,12 +21,11 @@
  * @property string $size
  * @property string $hash
  */
-class StorageFiles extends ActiveRecord
+
+abstract class StorageFilesAbstract extends ActiveRecord
 {
-    
-    /**
-     * @return string the associated database table name
-     */
+
+
     public function tableName()
     {
         return 'storage_files';
@@ -108,39 +107,28 @@ class StorageFiles extends ActiveRecord
 
         $criteria=new CDbCriteria;
 
-        $criteria->compare('id',$this->id,true);
-        $criteria->compare('parent_file_id',$this->parent_file_id,true);
-        $criteria->compare('type',$this->type,true);
-        $criteria->compare('parent_type',$this->parent_type,true);
-        $criteria->compare('parent_id',$this->parent_id,true);
-        $criteria->compare('user_id',$this->user_id,true);
-        $criteria->compare('creation_date',$this->creation_date,true);
-        $criteria->compare('modified_date',$this->modified_date,true);
-        $criteria->compare('service_id',$this->service_id,true);
-        $criteria->compare('storage_path',$this->storage_path,true);
-        $criteria->compare('extension',$this->extension,true);
-        $criteria->compare('name',$this->name,true);
-        $criteria->compare('mime_major',$this->mime_major,true);
-        $criteria->compare('mime_minor',$this->mime_minor,true);
-        $criteria->compare('size',$this->size,true);
-        $criteria->compare('hash',$this->hash,true);
+        $criteria->compare('id',$this->id);
+        $criteria->compare('parent_file_id',$this->parent_file_id);
+        $criteria->compare('type',$this->type);
+        $criteria->compare('parent_type',$this->parent_type);
+        $criteria->compare('parent_id',$this->parent_id);
+        $criteria->compare('user_id',$this->user_id);
+        $criteria->compare('creation_date',$this->creation_date);
+        $criteria->compare('modified_date',$this->modified_date);
+        $criteria->compare('service_id',$this->service_id);
+        $criteria->compare('storage_path',$this->storage_path);
+        $criteria->compare('extension',$this->extension);
+        $criteria->compare('name',$this->name);
+        $criteria->compare('mime_major',$this->mime_major);
+        $criteria->compare('mime_minor',$this->mime_minor);
+        $criteria->compare('size',$this->size);
+        $criteria->compare('hash',$this->hash);
 
         return new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
         ));
     }
 
-    /**
-     * Returns the static model of the specified AR class.
-     * Please note that you should have this exact method in all your CActiveRecord descendants!
-     * @param string $className active record class name.
-     * @return StorageFiles the static model class
-     */
-    public static function model($className=__CLASS__)
-    {
-        return parent::model($className);
-    }
-    
     protected function getDeafaultValues() {
         return array(
             'storage_path' => 'temp',
@@ -160,6 +148,34 @@ class StorageFiles extends ActiveRecord
     }
     
     /*==============================================================*/
+
+	public function insert()
+	{
+        $this->creation_date = date('Y-m-d H:i:s');
+        return parent::insert();
+	}
+   
+    public function update()
+	{
+        $this->modified_date = date('Y-m-d H:i:s');
+        return parent::update();
+	}
+
+    public function delete()
+	{
+        return parent::delete();
+	}
+    
+    public function isTemporary()
+    {
+        return  $this->parent_type === 'temporary';
+    }
+    
+    public function isSystem()
+    {
+        return  $this->parent_type === 'system';
+    }
+    
     public function getId() {
         return isset($this->id) ? $this->id : false;
     }
@@ -307,16 +323,6 @@ class StorageFiles extends ActiveRecord
         return $this->delete();
     }
 
-    public function isTemporary()
-    {
-        return  $this->parent_type === 'temporary';
-    }
-    
-    public function isSystem()
-    {
-        return  $this->parent_type === 'system';
-    }
-
     public function temporary()
     {
         return $this->getStorageService()->temporary($this);
@@ -332,8 +338,9 @@ class StorageFiles extends ActiveRecord
         $params['service_id'] = $storage->getIdentity();
         $params['storage_path'] = 'temp';
         unset($params['id']);
-
-        $copy = new self;
+        $StorageFilesClassName = get_class($this);
+        
+        $copy = new $StorageFilesClassName;
         $copy->setAttributes($params);
         $copy->save();
 
@@ -351,6 +358,7 @@ class StorageFiles extends ActiveRecord
 
         return $copy;
     }
+    
     public function updatePath()
     {
         $service = $this->getStorageService();
@@ -378,21 +386,4 @@ class StorageFiles extends ActiveRecord
         }
         return $this;
     }
-  
-	public function insert()
-	{
-        $this->creation_date = date('Y-m-d H:i:s');
-        return parent::insert();
-	}
-   
-    public function update()
-	{
-        $this->modified_date = date('Y-m-d H:i:s');
-        return parent::update();
-	}
-
-    public function delete()
-	{
-        return parent::delete();
-	}
 }
